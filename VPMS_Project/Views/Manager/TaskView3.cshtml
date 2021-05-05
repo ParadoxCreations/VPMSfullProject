@@ -1,0 +1,95 @@
+﻿@model List<Taskz>
+
+
+<label class="text-muted">PROJECT TASKS</label>
+<hr />
+
+<div class="row " style="background-color: #464a4e; border-radius: 6px; padding: 3px;  margin-bottom: 18px;margin-left: 5px;
+}">
+    <div class="col-2">
+        <label class="text-white">ID</label>
+    </div>
+    <div class="col-7">
+        <label class="text-white">TASK NAME</label>
+    </div>
+</div>
+    @foreach (var Task in Model)
+    {
+
+        
+
+
+<div class="row " style="background-color: #81949c; border-radius: 6px; padding: 3px;  margin-bottom: 18px;margin-left: 5px;">
+    <div class="col-2">
+        <label class="text-white">@Task.Id</label>
+    </div>
+    <div class="col-5">
+        <label class="text-white">@Task.Name</label>
+    </div>
+    <div class="col-2">
+        @if (Task.TimeSheet == true)
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#18672a" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="8" />
+            </svg>}
+        @if (Task.EndDate < DateTime.Now)
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#969323" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="8" />
+            </svg>
+        }
+        @if (Task.StartDate > DateTime.Now)
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=" #296580" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="8" />
+            </svg>
+        }
+        @if (Task.EndDate >= DateTime.Now && Task.StartDate <= DateTime.Now)
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#b35c11" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="8" />
+            </svg>
+        }
+    </div>
+    <div class="col-3">
+        <button id="show_@Task.Id" onclick="showcontent('@Task.Id', true);" class="btn btn-dark">show</button>
+    </div>
+    
+
+    <div class="row mr-0 ml-0" style="display:none" id="content_@Task.Id">
+        <div class="col-sm-6 "><label class="text-white">Created Date & Time = @Task.CreatedDate</label></div>
+        <div class="col-sm-6 "><label class="text-white">Last Update = @Task.LastUpdate</label></div>
+        <div class="col-sm-6 "><label class="text-white">Emloyee Name = @Task.Employee</label></div>
+        <div class="col-sm-6 "><label class="text-white">Project Name = @Task.project</label></div>
+        <div class="col-sm-6 "><label class="text-white">Task Description = @Task.Description</label></div>
+        <div class="col-sm-6 "><label class="text-white">Project Manager = @Task.ProjectManager</label></div>
+
+
+        <div class="col-2">
+            <button id="hide_@Task.Id" onclick="hidecontent('@Task.Id', true);" class="btn btn-dark">Hide</button>
+        </div>
+    </div>
+
+</div>
+
+      
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

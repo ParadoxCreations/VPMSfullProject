@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "overallBudget";
+    Layout = "~/Views/Shared/_LayoutManager.cshtml";
+}
+
+<br />
+<br />
+<br />
+<br />
+
+<div class="container">
+    <h4 class="text-center">Overall Budge </h4>
+    <br />
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">ProjectName </th>
+                    <th scope="col">EstimatedCost</th>
+                    <th scope="col">Budget</th>
+                    <th scope="col">CurrentActualCost</th>
+                    <th scope="col">CurrentEstimatedCost</th>
+                    <th scope="col">Settled </th>
+
+                </tr>
+            </thead>
+
+            @foreach (var project in @ViewBag.ProjectSummery)
+            {
+                <tbody>
+                    <tr>
+                        <td>@project.Id</td>
+                        <td>@project.ProjectName</td>
+                        <td>@project.EstimatedCost</td>
+                        <td>@project.Budget</td>
+                        <td>@project.CurrentActualCost</td>
+                        <td>@project.CurrentEstimatedCost</td>
+                        <td>@project.Settled</td>
+                    </tr>
+                </tbody>
+            }
+        </table>
+    </div>
+    <div class="col-sm-9 pt-4">
+        <partial name="chartRevenues" model="@ViewBag.Revenues" />
+    </div>
+    <div class="col-sm-9 pt-4">
+        <partial name="chart6monthRevenues" model="@ViewBag.SixMonthRevenues" />
+    </div>
+    <div>
+        <a asp-controller="Project" asp-action="GetAllProjects" class="btn btn-link">Back to Project List</a>
+    </div>
+
+</div>
+
