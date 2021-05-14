@@ -9,32 +9,32 @@
 
         <div class="row pt-5 pb-5">
             <div class=" col-sm-3" style="border-right: outset 2px;">
-                <div class="col-12 text-center" style="background-color: #355d61; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                <div class="col-10 text-center" style="background-color: #355d61; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
 
                     <label class="text-white" style="font-size:108%">TOTAL</label>
                     <label class="d-block text-white" style="font-size:108%">@ViewBag.Total</label>
 
                 </div>
                 <a class="text-decoration-none" asp-action="ProjectDetails" asp-controller="Manager" asp-route-type="status">
-                    <div class="col-12 text-center" style="background-color: #6ca7ad; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
-                        <p style="font-size:108%">STATUS</p>
+                    <div class="col-10 text-center" style="background-color: #709fa4; padding: 25px; border-radius: 15px; margin-bottom: 30px;box-shadow: -2px 9px 0px 3px #e6e6e6;">
+                        <p style="font-size:108%;color:white">STATUS</p>
                     </div>
                 </a>
                 <a class="text-decoration-none" asp-action="ProjectDetails" asp-controller="Manager" asp-route-type="project manager">
-                    <div class="col-12 text-center" style="background-color: #6ca7ad; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
-                        <p style="font-size:108%">PROJECT MANAGER</p>
+                    <div class="col-10 text-center" style="background-color: #709fa4; padding: 25px; border-radius: 15px; margin-bottom: 30px;box-shadow: -2px 9px 0px 3px #e6e6e6;">
+                        <p style="font-size:108%;color:white">PROJECT MANAGER</p>
 
                     </div>
                 </a>
                 <a class="text-decoration-none" asp-action="ProjectDetails" asp-controller="Manager" asp-route-type="category">
-                    <div class="col-12 text-center" style="background-color: #6ca7ad; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
-                        <p style="font-size:108%">CATEGORY</p>
+                    <div class="col-10 text-center" style="background-color: #709fa4; padding: 25px; border-radius: 15px; margin-bottom: 30px;box-shadow: -2px 9px 0px 3px #e6e6e6;">
+                        <p style="font-size:108%;color:white">CATEGORY</p>
 
                     </div>
                 </a>
                 <a class="text-decoration-none" asp-action="ProjectDetails" asp-controller="Manager" asp-route-type="state">
-                    <div class="col-12 text-center" style="background-color:#6ca7ad; padding: 25px; border-radius: 15px; margin-bottom: 30px;">
-                        <p style="font-size:108%">STATE</p>
+                    <div class="col-10 text-center" style="background-color:#709fa4; padding: 25px; border-radius: 15px; margin-bottom: 30px;box-shadow: -2px 9px 0px 3px #e6e6e6;">
+                        <p style="font-size:108%;color:white">STATE</p>
 
                     </div>
                 </a>
@@ -48,7 +48,7 @@
                     {
                         <label class="text-muted mb-4" >@data.type</label>
 
-                        <div class="row mb-4" style=" background-color:#776246; padding: 5px; border-radius: 10px;margin-left:5px">
+                        <div class="row mb-4" style=" background-color:#415258; padding: 5px; border-radius: 10px;margin-left:5px">
                             <div class="col-2">
                                 <label class="text-white">ID</label>
                             </div>
@@ -60,7 +60,7 @@
 
                         foreach (var project in data.Projects)
                         {
-                            <div class="row mb-2" style=" background-color:#deb8878f; padding: 5px; border-radius: 10px;margin-left:5px">
+                            <div class="row mb-2" style=" background-color:#d6d6d68f; padding: 5px; border-radius: 10px;margin-left:5px">
                                 <div class="col-2">
                                     <label>@project.Id</label>
                                 </div>

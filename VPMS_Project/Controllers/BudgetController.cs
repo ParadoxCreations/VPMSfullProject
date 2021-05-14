@@ -93,7 +93,7 @@ namespace VPMS_Project.Controllers
         {
             ViewBag.SixMonthRevenues = _budgetRepository.GetSixMonthRevenues();
             ViewBag.Revenues = _budgetRepository.GetRevenues();
-            ViewBag.ProjectSummery =_budgetRepository.ProjectsSummery();
+            ViewBag.ProjectSummery = _budgetRepository.ProjectsSummery();
             return View();
         }
         //edit customer details 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using VPMS_Project.Data;
@@ -765,5 +766,144 @@ namespace VPMS_Project.Models
 
             return list;
         }
+
+
+
+        public async Task EmailProjectStatus(int id)
+        {
+            bool attendance = _context.MarkAttendence.ToList().Exists(attendance => attendance.EmpId == id && attendance.Date == DateTime.Today);
+            if (attendance == false)
+            {
+                var emp = await _context.Employees.FindAsync(id);
+                var projToday = await _context.Projects.Where(proj => proj.EmployeesId == id && proj.DeliveryDate.Date == DateTime.Today).ToListAsync();
+                var project5 = await _context.Projects.Where(proj => proj.EmployeesId == id && proj.DeliveryDate.Date == DateTime.Today.AddDays(5)).ToListAsync();
+                var projDelay1 = await _context.Projects.Where(proj => proj.EmployeesId == id && proj.DeliveryDate.Date.AddDays(1) == DateTime.Today).ToListAsync();
+                var projDelay5 = await _context.Projects.Where(proj => proj.EmployeesId == id && proj.DeliveryDate.Date.AddDays(5) == DateTime.Today).ToListAsync();
+                var projDelay10 = await _context.Projects.Where(proj => proj.EmployeesId == id && proj.DeliveryDate.Date.AddDays(10) == DateTime.Today).ToListAsync();
+
+                if (projToday?.Any() == true)
+                {
+                    this.SendMail(projToday, "projToday", emp);
+                }
+                if (project5?.Any() == true)
+                {
+                    this.SendMail(project5, "projetc5", emp);
+                }
+                if (projDelay1?.Any() == true)
+                {
+                    this.SendMail(projDelay1, "projDelay1", emp);
+                }
+                if (projDelay5?.Any() == true)
+                {
+                    this.SendMail(projDelay5, "projDelay5", emp);
+                }
+                if (projDelay10?.Any() == true)
+                {
+                    this.SendMail(projDelay10, "projDelay10", emp);
+                }
+
+
+            }
+
+            return;
+        }
+
+        public bool SendMail(List<Projects> projects, string name, Employees emp)
+        {
+
+            string to = emp.Email;
+            String subject = "Regarding Project Status Update";
+
+            MailMessage mm = new MailMessage();
+            mm.To.Add(to);
+            mm.Subject = subject;
+            mm.From = new MailAddress("bellvantagecom737@gmail.com");
+            mm.Body += " Hi " + emp.EmpFName + ",<br>";
+            mm.Body += " There are pending status of projects you need to be consider.<br><br>";
+            mm.Body += " <html>";
+            mm.Body += "<body>";
+
+
+            if (name == "projToday")
+            {
+                mm.Body += "<h3 style='font-weight:bold'> It's already time to deliver following projects </h3>";
+                mm.Body += "<h4> Update the status if the projects are ready to be delivered.</h3>";
+                mm.Body += "<div><label style='font-weight:bold'>Following projects need your attention</label></div>";
+
+                foreach (var data in projects)
+                {
+                    mm.Body += "<div><label> Project Name : " + data.Name + " " + (data.Id) + "</label></div>";
+                    mm.Body += "<div><label> Project Type : " + data.Type + "</label></div>";
+                    mm.Body += "</hr></br>";
+                }
+
+            }
+            else if (name == "projetc5")
+            {
+                mm.Body += "<h3 style='font-weight:bold'> 5 more days to deliver following projects </h3>";
+                mm.Body += "<h4> Update the status if the projects are ready to be delivered.</h3>";
+                mm.Body += "<div><label style='font-weight:bold'>Following projects need your attention</label></div>";
+
+                foreach (var data in projects)
+                {
+                    mm.Body += "<div><label> Project Name : " + data.Name + " " + (data.Id) + "</label></div>";
+                    mm.Body += "<div><label> Project Type : " + data.Type + "</label></div>";
+                    mm.Body += "</hr></br>";
+                }
+            }
+            else if (name == "projDelay1")
+            {
+                mm.Body += "<h3 style='font-weight:bold'> It's already delayed to deliver following projects </h3>";
+                mm.Body += "<h4> Update the status if the projects are ready to be delivered.</h3>";
+                mm.Body += "<div><label style='font-weight:bold'>Following projects need your attention</label></div>";
+
+                foreach (var data in projects)
+                {
+                    mm.Body += "<div><label> Project Name : " + data.Name + " " + (data.Id) + "</label></div>";
+                    mm.Body += "<div><label> Project Type : " + data.Type + "</label></div>";
+                    mm.Body += "</hr></br>";
+                }
+            }
+            else if (name == "projDelay5")
+            {
+                mm.Body += "<h3 style='font-weight:bold'> It's almost 5 days behind the schedule to deliver following projects </h3>";
+                mm.Body += "<h4> Update the status if the projects are ready to be delivered.</h3>";
+                mm.Body += "<div><label style='font-weight:bold'>Following projects need your attention</label></div>";
+
+                foreach (var data in projects)
+                {
+                    mm.Body += "<div><label> Project Name : " + data.Name + " " + (data.Id) + "</label></div>";
+                    mm.Body += "<div><label> Project Type : " + data.Type + "</label></div>";
+                    mm.Body += "</hr></br>";
+                }
+            }
+            else if (name == "projDelay10")
+            {
+                mm.Body += "<h3 style='font-weight:bold'> It's almost 10 days behind the schedule to deliver following projects </h3>";
+                mm.Body += "<h4> Update the status if the projects are ready to be delivered.</h3>";
+                mm.Body += "<div><label style='font-weight:bold'>Following projects need your attention</label></div>";
+
+                foreach (var data in projects)
+                {
+                    mm.Body += "<div><label> Project Name : " + data.Name + " " + (data.Id) + "</label></div>";
+                    mm.Body += "<div><label> Project Type : " + data.Type + "</label></div>";
+                    mm.Body += "</hr></br>";
+                }
+            }
+
+            mm.Body += "</body>";
+            mm.Body += "</html>";
+            mm.IsBodyHtml = true;
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            smtp.Port = 587;
+
+            smtp.UseDefaultCredentials = false;
+            smtp.Credentials = new System.Net.NetworkCredential("bellvantagecom737@gmail.com", "Bell@1234");
+            smtp.EnableSsl = true;
+            smtp.Send(mm);
+            return true;
+        }
+
+
     }
 }

@@ -13,7 +13,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light text-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light text-white border-bottom box-shadow">
             <div class="container">
                 <a class="navbar-brand text-white" asp-controller="PreHome" asp-action="Index">
                     <img src="~/images/logo.png" width="30" height="30" />
@@ -71,11 +71,11 @@
             </div>
         </nav>
     </header>
-
-    <main role="main">
-        @RenderBody()
-    </main>
-
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
     <footer class=" footer text-muted text-center">
         <div class="container">
             Copyright &copy; Project Management Application @DateTime.Now.Year

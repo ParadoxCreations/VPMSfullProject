@@ -19,14 +19,16 @@ namespace VPMS_Project.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly TimeTrackRepo _timeTrackRepo = null;
         private readonly TaskRepo _taskRepository = null;
+        private readonly Repo4 _repo4 = null;
 
         public AccountController(UserManager<ApplicationUser> userManager, TimeTrackRepo timeTrackRepo, TaskRepo taskRepo,
-                              SignInManager<ApplicationUser> signInManager)
+                              SignInManager<ApplicationUser> signInManager, Repo4 repo4)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _timeTrackRepo = timeTrackRepo;
             _taskRepository = taskRepo;
+            _repo4 = repo4;
         }
 
         public IActionResult Register()
@@ -112,8 +114,16 @@ namespace VPMS_Project.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, user.Password, user.RememberMe, false);
+
                 if (result.Succeeded)
                 {
+                    string loggedinUser = User.FindFirst("Index").Value;
+                    var Currentuser = await _taskRepository.GetCurrentUser(loggedinUser);
+                    int EmpId = Currentuser.EmpId;
+                    if (Currentuser.JobType == "project manager")
+                    {
+                        await _repo4.EmailProjectStatus(EmpId);
+                    }
                     return RedirectToAction("Portal", "EmployeeHome");
                 }
 
