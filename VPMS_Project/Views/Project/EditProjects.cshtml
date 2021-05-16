@@ -1,96 +1,99 @@
 ﻿
 @{
     ViewData["Title"] = "EditProjects";
-    Layout = "~/Views/Shared/_Layout1.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model ProjectModel
 
-<div class="container">
+    <div id="addP1">
 
-    <h1 class="display-4 text-center">Edit Project</h1>
-    <hr />
+        <div class="container">
 
-    @if (ViewBag.Success == true)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Congratulations</strong> You successfully updated project.<br />
-            Click <a asp-controller="Project" asp-action="GetProject" asp-route-id="@ViewBag.id">here</a> to view the details
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <h1 class="display-4 text-center">Edit Project</h1>
+            <hr />
+
+            @if (ViewBag.Success == true)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Congratulations</strong> You successfully updated project.<br />
+                    Click <a asp-controller="Project" asp-action="GetProject" asp-route-id="@ViewBag.id">here</a> to view the details
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            <div class="row">
+                <div class="col">
+                    <form asp-action="EditProjects" asp-controller="Project" method="post" id="contact-from">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="ID" />
+                        <div class="form-group">
+                            <label asp-for="@Model.Title" class="control-label"></label>
+                            <input asp-for="@Model.Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.Description" class="control-label"></label>
+                            <input asp-for="@Model.Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.startDate" class="control-label"></label>
+                            <input asp-for="@Model.startDate" type="date" class="form-control" />
+                            <span asp-validation-for="startDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.EndDate" class="control-label"></label>
+                            <input asp-for="@Model.EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.projectManager" class="control-label"></label>
+                            <input asp-for="@Model.projectManager" class="form-control" />
+                            <span asp-validation-for="projectManager" class="text-danger"></span>
+                        </div>
+
+                        @*<div class="form-group">
+                                <label asp-for="@Model.projectManagerId"></label>
+                                <select asp-for="@Model.projectManagerId" class="form-control" asp-items="@Model.projectManager">
+                                    <option vlaue="">Please choose the project manager name</option>
+                                </select>
+                                <span asp-validation-for="@Model.projectManagerId" class="text-danger"></span>
+                            </div>*@
+
+
+                        <div class="form-group">
+                            <label asp-for="@Model.ProjectType" class="control-label"></label>
+                            <select asp-for="@Model.ProjectType" class="form-control">
+                                <option value="">Please choose a project type</option>
+                                <option>Maintain</option>
+                                <option>Develop</option>
+                                <option>R&D (Research & Development)</option>
+                                <option>Internal</option>
+                            </select>
+                            <span asp-validation-for="ProjectType" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.value" class="control-label"></label>
+                            <input asp-for="@Model.value" class="form-control" />
+                            <span asp-validation-for="value" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@Model.ProjectBudget" class="control-label"></label>
+                            <input asp-for="@Model.ProjectBudget" class="form-control" />
+                            <span asp-validation-for="ProjectBudget" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input asp-action="EditProjects" asp-controller="Project" type="submit" value="Update Project Details" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <a asp-action="GetAllProjects">Back to List</a>
+            </div>
         </div>
-    }
-    <div class="row">
-        <div class="col">
-            <form asp-action="EditProjects" asp-controller="Project" method="post" id="contact-from">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="ID" />
-                <div class="form-group">
-                    <label asp-for="@Model.Title" class="control-label"></label>
-                    <input asp-for="@Model.Title" class="form-control" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.Description" class="control-label"></label>
-                    <input asp-for="@Model.Description" class="form-control" />
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.startDate" class="control-label"></label>
-                    <input asp-for="@Model.startDate" type="date" class="form-control" />
-                    <span asp-validation-for="startDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.EndDate" class="control-label"></label>
-                    <input asp-for="@Model.EndDate" type="date" class="form-control" />
-                    <span asp-validation-for="EndDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.projectManager" class="control-label"></label>
-                    <input asp-for="@Model.projectManager" class="form-control" />
-                    <span asp-validation-for="projectManager" class="text-danger"></span>
-                </div>
-
-                @*<div class="form-group">
-                        <label asp-for="@Model.projectManagerId"></label>
-                        <select asp-for="@Model.projectManagerId" class="form-control" asp-items="@Model.projectManager">
-                            <option vlaue="">Please choose the project manager name</option>
-                        </select>
-                        <span asp-validation-for="@Model.projectManagerId" class="text-danger"></span>
-                    </div>*@
 
 
-                <div class="form-group">
-                    <label asp-for="@Model.ProjectType" class="control-label"></label>
-                    <select asp-for="@Model.ProjectType" class="form-control">
-                        <option value="">Please choose a project type</option>
-                        <option>Maintain</option>
-                        <option>Develop</option>
-                        <option>R&D (Research & Development)</option>
-                        <option>Internal</option>
-                    </select>
-                    <span asp-validation-for="ProjectType" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.value" class="control-label"></label>
-                    <input asp-for="@Model.value" class="form-control" />
-                    <span asp-validation-for="value" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="@Model.ProjectBudget" class="control-label"></label>
-                    <input asp-for="@Model.ProjectBudget" class="form-control" />
-                    <span asp-validation-for="ProjectBudget" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input asp-action="EditProjects" asp-controller="Project" type="submit" value="Update Project Details" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
     </div>
-
-    <div>
-        <a asp-action="GetAllProjects">Back to List</a>
-    </div>
-</div>
-
-

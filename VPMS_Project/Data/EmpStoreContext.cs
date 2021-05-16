@@ -27,6 +27,17 @@ namespace VPMS_Project.Data
         {
             _options = options;
         }
+
+        //new part
+
+        //public EmpStoreContext()
+        //{
+        //}
+
+        //finish
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
