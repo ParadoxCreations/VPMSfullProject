@@ -41,6 +41,12 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
+                            <div class="form-group"> <label asp-for="@Model.Email">Email</label> <input asp-for="@Model.Email" type="email" class="form-control" placeholder="Email"> </div>
+                            <span asp-validation-for="Email" class="text-danger font-weight-bold" style="font-family:revert; font-size:77%"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
                             <div class="form-group"> <label asp-for="@Model.Address">Address</label> <textarea asp-for="@Model.Address" class="form-control" placeholder="Enter customer address" rows="1"></textarea> </div>
                         </div>
                     </div>

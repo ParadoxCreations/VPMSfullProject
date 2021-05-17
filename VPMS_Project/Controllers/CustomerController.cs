@@ -16,12 +16,12 @@ namespace VPMS_Project.Controllers
         {
             _repo3 = repo3;
         }
-        public async Task<IActionResult> AddCustomer(bool isSuccess = false, int Id = 0, bool delete = false,int entries=0)
+        public async Task<IActionResult> AddCustomer(bool isSuccess = false, bool delete = false, bool duplicate = false)
         {
             ViewBag.isSuccess = isSuccess;
             ViewBag.delete = delete;
-            ViewBag.id = Id;
-            var data = await _repo3.GetCustomers(entries);
+            ViewBag.duplicate = duplicate;
+            var data = await _repo3.GetCustomers();
             ViewData["customer"] = data;
             return View();
         }
@@ -38,13 +38,19 @@ namespace VPMS_Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                int id = await _repo3.AddCustomer(customer);
-                if (id > 0)
+                var customerAvailable = await _repo3.DupCustomer(customer.Email);
+                if (customerAvailable == false)
                 {
-                    return RedirectToAction(nameof(AddCustomer), new { isSuccess = true, Id = id });
-                }
+                  int id = await _repo3.AddCustomer(customer);
+                  if (id > 0)
+                  {
+                    return RedirectToAction(nameof(AddCustomer), new { isSuccess = true});
+                  }
+                }else
+                    return RedirectToAction(nameof(AddCustomer), new { duplicate=true });
+
             }
-            var data = await _repo3.GetCustomers(0);
+            var data = await _repo3.GetCustomers();
             ViewData["customer"] = data;
             return View();
         }
@@ -61,11 +67,11 @@ namespace VPMS_Project.Controllers
             return View(data);
         }
 
-        public async Task<IActionResult> EditCustomer(bool Success = false, int Id = 0,int count=0)
+        public async Task<IActionResult> EditCustomer(bool Success = false, int Id = 0)
         {
             ViewBag.Success = Success;
             ViewBag.id = Id;
-            var data = await _repo3.GetCustomers(count);
+            var data = await _repo3.GetCustomers();
             ViewData["customer"] = data;
             var data2 = await _repo3.GetCustomerById(Id);
             return View(data2);
@@ -82,7 +88,7 @@ namespace VPMS_Project.Controllers
                     return RedirectToAction(nameof(EditCustomer), new { Success = true });
                 }
             }
-            var data = await _repo3.GetCustomers(0);
+            var data = await _repo3.GetCustomers();
             ViewData["customer"] = data;
             return View();
         }

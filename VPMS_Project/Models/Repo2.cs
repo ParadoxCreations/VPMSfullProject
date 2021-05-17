@@ -455,6 +455,23 @@ namespace VPMS_Project.Models
             return list;
         }
 
+        public IQueryable<Tasks> GetTasks2Async(int id)
+        {
+            
+            if (id == 0)
+            {
+              var  data1 = _context.Tasks.AsQueryable();
+                return data1;
+            }
+            else
+            {
+               var data2 = _context.Tasks.Where(task => task.ProjectsId == id);
+               return data2;
+            }
+             
+            
+
+        }
 
         public async Task<List<Taskz>> GetTasks(int count, int emp, int proj, String state)
         {

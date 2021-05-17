@@ -12,9 +12,13 @@ namespace VPMS_Project.Models
         [StringLength(50, MinimumLength = 5)]
         [Required(ErrorMessage = "Name is required")]
         public String Name { get; set; }
+        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Email field is required")]
+        [EmailAddress]
+        public String Email { get; set; }
         public String Address { get; set; }
         [DataType(DataType.PhoneNumber)]
-        [RegularExpression(@"^[0-9]{9}$",ErrorMessage = "Invaid format")]
+        [Required]
         public int ContactNo { get; set; }
         
     }

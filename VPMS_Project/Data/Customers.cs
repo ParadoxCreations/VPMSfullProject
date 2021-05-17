@@ -10,6 +10,7 @@ namespace VPMS_Project.Data
         [key]
         public int Id { get; set; }
         public String Name { get; set; }
+        public String Email { get; set; }
         public String Address { get; set; }
         public int ContactNo { get; set; }
         public ICollection<Projects> Projects { get; set; }

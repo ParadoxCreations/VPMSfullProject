@@ -117,13 +117,6 @@ namespace VPMS_Project.Controllers
 
                 if (result.Succeeded)
                 {
-                    string loggedinUser = User.FindFirst("Index").Value;
-                    var Currentuser = await _taskRepository.GetCurrentUser(loggedinUser);
-                    int EmpId = Currentuser.EmpId;
-                    if (Currentuser.JobType == "project manager")
-                    {
-                        await _repo4.EmailProjectStatus(EmpId);
-                    }
                     return RedirectToAction("Portal", "EmployeeHome");
                 }
 

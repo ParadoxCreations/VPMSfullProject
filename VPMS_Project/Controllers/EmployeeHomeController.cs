@@ -21,9 +21,10 @@ namespace VPMS_Project.Controllers
         private readonly LeaveRepository _leaveRepository = null;
         private readonly AttendenceRepo _attendenceRepository = null;
         private readonly TaskRepo _taskRepository = null;
+        private readonly Repo4 _repo4 = null;
 
 
-        public EmployeeHomeController(TaskRepo taskRepo, AttendenceRepo attendenceRepo, LeaveRepository leaveRepository, IEmpRepository empRepository, IWebHostEnvironment webHostEnvironment, TimeTrackRepo timeTrackRepo, EmpStoreContext context)
+        public EmployeeHomeController(TaskRepo taskRepo, AttendenceRepo attendenceRepo, LeaveRepository leaveRepository, IEmpRepository empRepository, IWebHostEnvironment webHostEnvironment, TimeTrackRepo timeTrackRepo, EmpStoreContext context, Repo4 repo4)
         {
             _timeTrackRepo = timeTrackRepo;
             _empRepository = empRepository;
@@ -32,6 +33,7 @@ namespace VPMS_Project.Controllers
             _leaveRepository = leaveRepository;
             _attendenceRepository = attendenceRepo;
             _taskRepository = taskRepo;
+            _repo4 = repo4;
 
         }
 
@@ -62,6 +64,10 @@ namespace VPMS_Project.Controllers
             await _taskRepository.LoggedIn(EmpId);
             await _taskRepository.TimeSEmail(EmpId);
             await _timeTrackRepo.AttendenceEmail(EmpId);
+            if (Currentuser.JobType == "project manager")
+            {
+                await _repo4.EmailProjectStatus(EmpId);
+            }
 
             ViewBag.EmpId = EmpId;
             bool result = _timeTrackRepo.CheckExist(EmpId);

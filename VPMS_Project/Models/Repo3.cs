@@ -22,7 +22,8 @@ namespace VPMS_Project.Models
             {
                 Name = customer.Name,
                 Address = customer.Address,
-                ContactNo = customer.ContactNo
+                ContactNo = customer.ContactNo,
+                Email = customer.Email
             };
 
             await _context.Customers.AddAsync(NewCustomer);
@@ -31,31 +32,31 @@ namespace VPMS_Project.Models
             return NewCustomer.Id;
         }
 
-        public async Task<List<Customer>> GetCustomers(int x)
+        public async Task<List<Customer>> GetCustomers()
         {
-            if (x != 0)
-            {
-            var data = await _context.Customers.Select(x => new Customer()
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Address = x.Address,
-                ContactNo = x.ContactNo
-            }).OrderByDescending(x => x.Id).Take(x).ToListAsync();
-             return data;
-            }
-            else
-            {
+            
                 var data = await _context.Customers.Select(x => new Customer()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Address = x.Address,
-                    ContactNo = x.ContactNo
+                    ContactNo = x.ContactNo,
+                    Email = x.Email
                 }).OrderByDescending(x => x.Id).ToListAsync();
                 return data;
-            }
             
+            
+        }
+
+        public async Task<bool> DupCustomer(String email)
+        {
+            var data = await _context.Customers.Where(cus => cus.Email.Equals(email)).ToListAsync();
+            if (data?.Any() == true)
+            {
+                return true;
+            }
+            else
+                return false;
         }
 
         public async Task<String> GetCustomerNameById(int? Id)
@@ -76,7 +77,8 @@ namespace VPMS_Project.Models
                     Id = customer.Id,
                     ContactNo = customer.ContactNo,
                     Name = customer.Name,
-                    Address =customer.Address
+                    Address =customer.Address,
+                    Email = customer.Email,
                 };
                 return details;
             }
@@ -91,6 +93,7 @@ namespace VPMS_Project.Models
             cus.Name = customers.Name;
             cus.Address = customers.Address;
             cus.ContactNo = customers.ContactNo;
+            cus.Email = customers.Email;
        
 
             _context.Entry(cus).State = EntityState.Modified;

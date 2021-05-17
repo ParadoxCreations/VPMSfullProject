@@ -186,7 +186,7 @@ namespace VPMS_Project.Controllers
             ViewBag.Success = Success;
             ViewBag.id = Id;
             ViewBag.ProjectManager = new SelectList(await _repo2.GetEmployeeByTitle("project manager"), "Id", "Name");
-            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(0), "Id", "Name");
+            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             var data = await _repo.GetProjectById(Id);
             return View(data);
         }
@@ -204,7 +204,7 @@ namespace VPMS_Project.Controllers
                 }
             }
             ViewBag.ProjectManager = new SelectList(await _repo2.GetEmployeeByTitle("project manager"), "Id", "Name");
-            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(0), "Id", "Name");
+            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             return View();
         }
 
@@ -217,7 +217,7 @@ namespace VPMS_Project.Controllers
             ViewBag.id = Id;
             ViewData["projects"] = await _repo.GetProjects2();
             ViewBag.ProjectManager = new SelectList(await _repo2.GetEmployeeByTitle("project manager"), "Id", "Name");
-            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(0), "Id", "Name");
+            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             return View();
         }
         [Authorize(Roles = "admin")]
@@ -243,7 +243,7 @@ namespace VPMS_Project.Controllers
                 }
             }
             ViewBag.ProjectManager = new SelectList(await _repo2.GetEmployeeByTitle("project manager"), "Id", "Name");
-            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(0), "Id", "Name");
+            ViewBag.Customer = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             ViewData["projects"] = await _repo.GetProjects2();
             return View();
         }

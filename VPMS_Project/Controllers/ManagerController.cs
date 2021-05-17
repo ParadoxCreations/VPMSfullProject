@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VPMS_Project.Data;
 using VPMS_Project.Models;
 
 namespace VPMS_Project.Controllers
@@ -35,7 +36,7 @@ namespace VPMS_Project.Controllers
             return View(data);
         }
 
-        public async Task<IActionResult> TaskDetails(int id = 0)
+        public async Task<IActionResult> TaskDetails(int id = 0, int pageNumber = 1)
         {
             ViewBag.TodayAllocated = await _repo4.TaskToday();
             ViewBag.TodayStarted = await _repo4.TaskToday2();
@@ -43,13 +44,13 @@ namespace VPMS_Project.Controllers
             
             ViewData["count"] = await _repo2.TaskOverview();
             ViewData["projects"] = await _repo.GetProjects();
-            if (id == 0)
-            {
-                ViewData["tasks"] = await _repo2.GetTasks(10, 0, id, null);
+            int pageSize = 10;
+            
+            
+                var data1 =  _repo2.GetTasks2Async(id);
+                ViewData["tasks"] =await PaginatedList<Tasks>.CreateAsync(data1, pageNumber, pageSize);
 
-            }
-            else
-                ViewData["tasks"] = await _repo2.GetTasks(0, 0, id, null);
+            
             return View();
         }
 
