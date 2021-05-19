@@ -113,7 +113,17 @@ namespace VPMS_Project.Data
         public DbSet<ProjectSummary> VW_ProjectSummary { get; set; } //Todo MNl
         public DbSet<Payment> Payments { get; set; } //Todo MNl
 
-        
+        /* Live chat -hashitha */
+
+        //public DbSet<Message> Messages { get; set; }
+        //public DbSet<Chat> Chats { get; set; }
+        //public DbSet<ChatUser> ChatUsers { get; set; }
+
+        /* Review -hashitha */
+
+        public DbSet<WorkQualityModel> WorkQuality { get; set; }
+
+        public DbSet<Communication> Communication { get; set; }
 
 
 

@@ -50,5 +50,11 @@ namespace VPMS_Project.Models
 
         public String ProjectManager { get; set; }
 
+        public String EmpName { get; set; }
+
+        public static implicit operator TaskModel(List<TaskModel> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
