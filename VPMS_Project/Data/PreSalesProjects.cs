@@ -27,7 +27,7 @@ namespace VPMS_Project.Data
 
         public DateTime endDate { get; set; }
 
-        public PreSalesCustomers PreSalesCustomers { get; set; }
+        public Customers Customers { get; set; }
 
         public PreSalesProjectManager PreSalesprojectManager { get; set; }
 

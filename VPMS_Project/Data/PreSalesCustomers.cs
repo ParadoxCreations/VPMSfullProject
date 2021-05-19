@@ -19,6 +19,6 @@ namespace VPMS_Project.Data
 
         public int projectCount { get; set; }
 
-        public ICollection<PreSalesProjects> PreSalesProjects { get; set; }
+        
     }
 }

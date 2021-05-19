@@ -14,5 +14,6 @@ namespace VPMS_Project.Data
         public String Address { get; set; }
         public int ContactNo { get; set; }
         public ICollection<Projects> Projects { get; set; }
+        public ICollection<PreSalesProjects> PreSalesProjects { get; set; }
     }
 }

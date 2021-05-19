@@ -34,10 +34,8 @@ namespace VPMS_Project.Repository
                 CustomersId = x.CustomersId,
                 projectManagerId = x.projectManagerId
 
-
             }).ToListAsync();
         }
-
         //finish
 
 
@@ -62,8 +60,8 @@ namespace VPMS_Project.Repository
 
             return newProject.ID;
         }
-        //new part
 
+        //new part
         public async Task<List<ProjectModel>> SearchProject(string title)
         {
             var projects = new List<ProjectModel>();
@@ -82,11 +80,8 @@ namespace VPMS_Project.Repository
                             ProjectType = project.ProjectType,
                         });
                     }
-
                 }
             }
-
-
             return projects;
         }
         //finish part
@@ -101,8 +96,6 @@ namespace VPMS_Project.Repository
                 {
                     projects.Add(new ProjectModel()
                     {
-
-
                         ID = project.ID,
                         Title = project.Title,
                         Description = project.Description,
@@ -114,16 +107,11 @@ namespace VPMS_Project.Repository
                         value = project.value,
                         ProjectBudget = project.ProjectBudget,
                         CustomersId = project.CustomersId,
-
-
                     });
                 }
             }
-
-
             return projects;
         }
-
 
         public async Task<ProjectModel> GetProjectByID(int id)
         {
@@ -141,10 +129,9 @@ namespace VPMS_Project.Repository
             //        value = project.value,
             //        ProjectBudget = project.ProjectBudget,
             //        CustomersId = project.CustomersId,
-            //        Customers = project.PreSalesCustomers.name,
+            //        Customers = project.Customers.Name,
 
             //    }).FirstOrDefaultAsync();
-
 
             return await (from p in _context.PreSalesProjects.Where(x => (x.ID == id))
                           join c in _context.PreSalesCustomers on p.CustomersId equals c.Id
@@ -165,7 +152,7 @@ namespace VPMS_Project.Repository
                               Customers = c.name
                           }).FirstOrDefaultAsync();
         }
-        
+
         // new part
         public async Task<bool> EditProjects(ProjectModel project)
         {
@@ -182,11 +169,9 @@ namespace VPMS_Project.Repository
             project.projectManager = project.projectManager;
             //pro.Customers = project.Customers;
 
-
             _context.Entry(pro).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return true;
-
         }
         //new part finish
 
@@ -205,7 +190,6 @@ namespace VPMS_Project.Repository
         public async Task<bool> AddToDeletedProjects(int id)
         {
             var projects = await _context.PreSalesProjects.FindAsync(id);
-
 
             var NewProject = new PreSalesDeletedProjects
             {
@@ -228,13 +212,46 @@ namespace VPMS_Project.Repository
 
         //Finish delete part
 
-        public List<ProjectModel> SearchProject(string title, string projectClientId)
-        {
+        //public List<ProjectModel> SearchProject(string title, string projectClientId)
+        //{
+        //    return null;
+        //}
 
-            return null;
+
+        //convert part
+        public async Task<bool> ConvertProject(int id)
+        {
+            var convertProjects = await _context.PreSalesProjects.FindAsync(id);
+
+            _context.PreSalesProjects.Remove(convertProjects);
+            await _context.SaveChangesAsync();
+            return true;
+
         }
 
+        //convert the project after going to add new project
+        public async Task<bool> AddToConvertProjects(int id)
+        {
+            var projects = await _context.PreSalesProjects.FindAsync(id);
 
+            var NewConvertProject = new Projects
+            {
+                Name = projects.Title,
+                Description = projects.Description,
+                Type = projects.ProjectType,
+                EstimetedBudget = projects.value,
+                ContractValue = projects.ProjectBudget,
+                CustomersId = projects.CustomersId,
+                EmployeesId = projects.projectManagerId,
+                StartDate = projects.startDate,
+                ClosedDate = projects.endDate,
+
+            };
+            await _context.Projects.AddAsync(NewConvertProject);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
 

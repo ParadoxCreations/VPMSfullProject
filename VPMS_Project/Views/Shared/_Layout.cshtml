@@ -48,7 +48,7 @@
                             </a>
                         </li>
                         @if (User.FindFirst("Designation").Value == "project manager")
-                            
+
                         {
                             <li><a class="text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="UserDashboard">DASHBOARD</a></li>
                         }
@@ -74,8 +74,9 @@
                             <ul class="dropdown-menu">
                                 <li class="m-3"><a class="text-decoration-none text-white" asp-controller="Project" asp-action="GetAllProjects">VIEW PROJECTS</a></li>
                                 <li class="m-3"><a class="text-decoration-none text-white" asp-controller="Project" asp-action="AddNewProject">ADD PROJECT</a></li>
-                                <li class="m-3"><a class="text-decoration-none text-white" asp-controller="PreCustomer" asp-action="GetAllCustomers">ALL CUSTOMERS</a></li>
-                                <li class="m-3"><a class="text-decoration-none text-white" asp-controller="PreCustomer" asp-action="AddNewCustomer">ADD CUSTOMER</a></li>
+                                <li class="m-3"><a class="text-decoration-none text-white" asp-controller="Customer" asp-action="AddCustomer">ADD CUSTOMER</a></li>
+                                @*<li class="m-3"><a class="text-decoration-none text-white" asp-controller="PreCustomer" asp-action="GetAllCustomers">ALL CUSTOMERS</a></li>
+                                    <li class="m-3"><a class="text-decoration-none text-white" asp-controller="PreCustomer" asp-action="AddNewCustomer">ADD CUSTOMER</a></li>*@
                             </ul>
                         </li>
 

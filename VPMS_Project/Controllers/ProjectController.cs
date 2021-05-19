@@ -25,21 +25,15 @@ namespace VPMS_Project.Controllers
         private readonly CustomerRepository _customerRepository = null;
         private readonly ProjectManagerRepository _projectManagerRepository = null;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-
-       
-
+        private readonly Repo3 _repo3 = null;
 
         public object GetDocument { get; private set; }
 
         public ProjectController(ProjectRepository projectRepository,
             CustomerRepository customerRepository,
             ProjectManagerRepository projectManagerRepository,
-            IWebHostEnvironment webHostEnvironment
-
-            
-
-
+            IWebHostEnvironment webHostEnvironment,
+            Repo3 repo3
 
             )
         {
@@ -47,21 +41,15 @@ namespace VPMS_Project.Controllers
             _customerRepository = customerRepository;
             _projectManagerRepository = projectManagerRepository;
             _webHostEnvironment = webHostEnvironment;
-
-            
+            _repo3 = repo3;
 
         }
 
         //public async Task<ViewResult>  GetAllProjects()
         //{
-
-
         //    var data = await _projectRepository.GetAllProjects();
-
         //    return View(data);
         //}
-
-
         //new part
 
         [Authorize(Roles = "admin")]
@@ -73,11 +61,6 @@ namespace VPMS_Project.Controllers
 
             return View(data);
         }
-
-
-
-
-
 
         //[HttpGet]
         //public async Task<IActionResult> GetAllProjects(string PropSearch)
@@ -92,27 +75,7 @@ namespace VPMS_Project.Controllers
         //    return View(await propquary.AsNoTracking().ToListAsync());
         //}
 
-
-
-
         //finish part
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         [Authorize(Roles = "admin")]
         [Route("project-details/{id}", Name = "projectDetailsRoute")]
@@ -125,8 +88,6 @@ namespace VPMS_Project.Controllers
 
             return View(data);
         }
-
-
 
         //new part
 
@@ -150,23 +111,14 @@ namespace VPMS_Project.Controllers
 
             return RedirectToAction(nameof(GetAllProjects));
         }
-
-
-
-
-
         //finish part
-
-
-
-
 
         [Authorize(Roles = "admin")]
         public async Task<ViewResult> AddNewProject(bool isSuccess = false, int projectId = 0, bool currentContext = false, bool invalid = false)
         {
             var model = new ProjectModel();
 
-            ViewBag.Customers = new SelectList(await _customerRepository.GetCustomers(), "Id", "name");
+            ViewBag.Customers = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager(), "Id", "Name");
 
             ViewBag.IsSuccess = isSuccess;
@@ -198,7 +150,7 @@ namespace VPMS_Project.Controllers
                     return RedirectToAction(nameof(AddNewProject), new { isSuccess = true, projectId = id });
                 }
             }
-            ViewBag.Customers = new SelectList(await _customerRepository.GetCustomers(), "Id", "name");
+            ViewBag.Customers = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
             ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager(), "Id", "Name");
             return View();
         }
@@ -244,14 +196,21 @@ namespace VPMS_Project.Controllers
                 bool success = await _projectRepository.DeleteProject(id);
                 return RedirectToAction(nameof(AddNewProject), new { delete = add });
             }
-
             return null;
-
         }
 
-
-
-
+        // conver part 
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> ConvertProject(int id)
+        {
+            bool add = await _projectRepository.AddToConvertProjects(id);
+            if (add == true)
+            {
+                bool success = await _projectRepository.ConvertProject(id);
+                return RedirectToAction(nameof(GetAllProjects), new { delete = add });
+            }
+            return null;
+        }
 
     }
 }
