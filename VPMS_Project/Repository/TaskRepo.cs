@@ -35,10 +35,74 @@ namespace VPMS_Project.Repository
                               CreatedDate = a.CreatedDate,
                               Description = a.Description
 
-                          }).ToListAsync();
+                          }).OrderBy(x=> x.StartDate).ToListAsync();
         }
 
+        public async Task<List<EmpModel>> GetEmps(int id)
+        {
+            return await (from a in _context.Employees.Where(x => (x.Status == "Active") && (x.EmpId!=id))
+                          join b in _context.Job on a.JobTitleId equals b.JobId
+                          select new EmpModel()
+                          {
+                              EmpId = a.EmpId,
+                              EmpFullName = a.EmpFName + " " + a.EmpLName
+                          })
+                           .ToListAsync();
+        }
 
+        public async Task<List<TaskModel>> GetTask(int id)
+        {
+            return await (from a in _context.Tasks.Where(x => (x.EmployeesId == id) && ((x.TaskComplete == true) || (x.TimeSheet == true)))
+                          join b in _context.Projects on a.ProjectsId equals b.Id
+                          select new TaskModel()
+                          {
+                              Id = a.Id,
+                              Name = a.Name+" - "+ b.Name,
+                          })
+                           .ToListAsync();
+        }
+
+        public async Task<int> AddVal(int TaskId,int id,int Val,int EmpId)
+        {
+            var task = await _context.Tasks.FindAsync(TaskId);
+            var project = await _context.Projects.FindAsync(task.ProjectsId);
+            var GivenEmp = await _context.Employees.FindAsync(EmpId);
+            var Work = new WorkQualityModel()
+            {
+              TaskId= TaskId,
+              EmployeesId= id,
+              Quality=Val,
+              GivenEmpId=EmpId,
+              ProjectName= project.Name,
+              TaskName=task.Name,
+              GivenEmp= GivenEmp.EmpFName+" "+GivenEmp.EmpLName
+            };
+
+            await _context.WorkQuality.AddAsync(Work);
+            await _context.SaveChangesAsync();
+
+            return Work.Id;
+        }
+
+        public async Task<int> AddValForCommunication(int id, int Val, int EmpId)
+        {
+            var com = new Communication()
+            {
+                EmployeesId = id,
+                CommunicationVal = Val,
+                GivenEmpId = EmpId,
+            };
+
+            await _context.Communication.AddAsync(com);
+            await _context.SaveChangesAsync();
+
+            return com.Id;
+        }
+        public bool CheckRate(int TaskId, int id,int EmpId)
+        {
+            bool result = _context.WorkQuality.ToList().Exists(x => (x.TaskId == TaskId) && (x.EmployeesId == id) && (x.GivenEmpId == EmpId));
+            return result;
+        }
 
         public async Task<List<Project>> GetProjects()
         {
@@ -83,6 +147,46 @@ namespace VPMS_Project.Repository
                           }).ToListAsync();
         }
 
+        public async Task<List<TaskModel>> GetAllTaskList2(int id)
+        {
+            return await (from a in _context.Tasks.Where(x => (x.EmployeesId == id) && ((x.TaskComplete == true) || (x.TimeSheet == true)))
+                          join b in _context.TimeSheetTask on a.Id equals b.TaskId
+                          join c in _context.Projects on a.ProjectsId equals c.Id
+                          select new TaskModel()
+                          {
+                              Id = a.Id,
+                              Name = a.Name,
+                              ProjectName = c.Name,
+                              AllocatedHours = a.AllocatedHours,
+                              EmpId = id,
+                              TakenHours = b.TotalHours,
+
+                          }).ToListAsync();
+        }
+
+        public async Task<List<WorkQModel>> GetTasksForWorkQuality(int id)
+        {
+            return await (from a in _context.WorkQuality.Where(x => x.EmployeesId == id)
+                          select new WorkQModel()
+                          {
+                              Task = a.TaskName,
+                              Project = a.ProjectName,
+                              Quality = a.Quality,
+                              GivenBy=a.GivenEmp
+                          }).ToListAsync();
+        }
+
+        public async Task<List<CommunicationModel>> GetCommunication(int id)
+        {
+            return await (from a in _context.Communication.Where(x => x.EmployeesId == id)
+                          select new CommunicationModel()
+                          {
+                              CommuniId = a.Id,
+                              CommunicationVal=a.CommunicationVal
+
+                          }).ToListAsync();
+        }
+
         public async Task<List<TaskModel>> AllTaskListAsync(int id)
         {
             return await (from a in _context.Tasks.Where(x => (x.EmployeesId == id))
@@ -93,6 +197,7 @@ namespace VPMS_Project.Repository
                               Name = a.Name,
                               ProjectName = c.Name,
                               TaskComplete = a.TaskComplete,
+                              TimeSheet=a.TimeSheet,
                               AllocatedHours = a.AllocatedHours,
                               EmpId = id,
                               StartDate = a.StartDate,
@@ -113,6 +218,13 @@ namespace VPMS_Project.Repository
             await _context.SaveChangesAsync();
 
             return true;
+
+        }
+
+        public async Task<String> GetName(int id)
+        {
+            var emp = await _context.Employees.FindAsync(id);            
+           return emp.EmpFName+" "+emp.EmpLName ;
 
         }
 
@@ -343,7 +455,7 @@ namespace VPMS_Project.Repository
                 EndDate = E_Date,
                 CreatedDate = DateTime.Now,
                 LastUpdate = DateTime.Now,
-                Description = Des,
+                Description = "Non-Allocated Task"+ Des,
                 TimeSheet = true,
                 ProjectManager = managerInfo.EmpFName,
                 ProjectName = taskInfo.Name,
@@ -385,8 +497,10 @@ namespace VPMS_Project.Repository
         {
             String content = "Your new task request below has been recommeded";
             await EmailSend2(id, content);
+
             var TaskInfo = await _context.Staff_Task.FindAsync(id);
-            await StatusUpdate(TaskInfo.EmpId, TaskInfo.StartDate);
+            await StatusUpdate(TaskInfo.EmpId, TaskInfo.StartDate);  // Updating status that entering time sheets on timesheetcheck table
+
             int taskId = await TaskTableInsert(TaskInfo.EmpId, TaskInfo.ProjectId, TaskInfo.TaskName, TaskInfo.Description, TaskInfo.StartDate, TaskInfo.EndDate);
             await TImeSheetTaskInsert(taskId, TaskInfo.StartDate, TaskInfo.EndDate);
 
@@ -498,6 +612,7 @@ namespace VPMS_Project.Repository
                               Description = a.Description,
                               AllocatedHours = a.AllocatedHours,
                               TaskComplete = a.TaskComplete,
+                              TimeSheet=a.TimeSheet,
                               ActualStartDateTime = Start,
                               ActualEndDateTime = End,
                               TakenHours = Taken,
@@ -521,6 +636,8 @@ namespace VPMS_Project.Repository
             bool result = _context.LeaveApply.ToList().Exists(x => (x.EmpId == id) && (x.Startdate <= date) && (x.EndDate > date) && (x.Status == "Approved"));
             return result;
         }
+
+      
 
         public async Task<bool> TimeSEmail(int id)
         {
@@ -742,5 +859,184 @@ namespace VPMS_Project.Repository
             return true;
         }
 
+        public int Total(DateTime date)
+        {
+            int count = _context.Tasks.Where(x => (x.StartDate.Date <= date.Date) && (x.EndDate.Date >= date.Date)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int Done(DateTime date)
+        {
+            int count = _context.Tasks.Where(x => (x.StartDate.Date <= date.Date) && (x.EndDate.Date >= date.Date) && (x.TimeSheet == true)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int NotDone(DateTime date)
+        {
+            int count = _context.Tasks.Where(x => (x.StartDate.Date <= date.Date) && (x.EndDate.Date >= date.Date) && (x.TimeSheet == false)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public async Task<List<TaskModel>> OverdueTasks(DateTime date)
+        {
+            return await (from a in _context.Tasks.Where(x => (x.StartDate.Date <= date.Date) && (x.EndDate.Date >= date.Date) && (x.TimeSheet == false))
+                          join b in _context.Projects on a.ProjectsId equals b.Id
+                          join c in _context.Employees on a.EmployeesId equals c.EmpId
+                          select new TaskModel()
+                          {
+                              Name=a.Name,
+                              StartDate=a.StartDate,
+                              EndDate=a.EndDate,
+                              AllocatedHours=a.AllocatedHours,
+                              EmpName=c.EmpFName+" "+c.EmpLName,
+                              ProjectName=b.Name,
+                              ProjectManager=a.ProjectManager
+
+
+                          }).ToListAsync();
+        }
+
+        public async Task<List<TaskModel>> PendingTasks()
+        {
+            return await (from a in _context.Tasks.Where(x => (x.TaskComplete == false) || (x.TimeSheet == false))
+                          join b in _context.Projects on a.ProjectsId equals b.Id
+                          join c in _context.Employees on a.EmployeesId equals c.EmpId
+                          select new TaskModel()
+                          {
+                              Name = a.Name,
+                              StartDate = a.StartDate,
+                              EndDate = a.EndDate,
+                              AllocatedHours = a.AllocatedHours,
+                              EmpName = c.EmpFName + " " + c.EmpLName,
+                              ProjectName = b.Name,
+                              ProjectManager = a.ProjectManager
+
+
+                          }).ToListAsync();
+        }
+
+        public int TotalTask()
+        {
+            int count = _context.Tasks.Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int DoneTask()
+        {
+            int count = _context.Tasks.Where(x => (x.TaskComplete == true) && (x.TimeSheet == true)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int NotDoneTask()
+        {
+            int count = _context.Tasks.Where(x => (x.TaskComplete == false) || (x.TimeSheet == false)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public bool CheckIn(int id)
+        {
+            var info = _context.TimeTracker.SingleOrDefault(x => (x.EmpId == id) && (x.Date == DateTime.Now.Date));
+            if (info == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<AttendenceModel> GetWorkLog(int id)
+            {
+            AttendenceModel am = new AttendenceModel();
+            var info = _context.TimeTracker.SingleOrDefault(x => (x.EmpId == id) && (x.Date == DateTime.Now.Date));
+            if (info.Status== "Work") 
+            {
+                am.InTime = (DateTime)info.InTime;
+                am.Status = info.Status;
+                return am;
+            }
+            else
+            {
+                am.InTime = (DateTime)info.InTime;
+                am.OutTime = (DateTime)info.OutTime;
+                am.TotalHours = info.TotalHours;
+                am.Status = info.Status;
+                return am;
+            }          
+            }
+
+        public int CumulativeTotal(int id)
+        {
+            int count = _context.Tasks.Where(x=> (x.EmployeesId==id)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int CumulativeDone(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.TaskComplete==true) && (x.TimeSheet==true)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int MonthlyTotal(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.StartDate.Month==DateTime.Now.Month)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int MonthlyDone(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.TaskComplete == true) && (x.TimeSheet == true) && (x.StartDate.Month == DateTime.Now.Month)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int Pending(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && ((x.TaskComplete == false) || (x.TimeSheet == false))).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int InProgress(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.EndDate.Date >=DateTime.Now.Date) && ((x.TaskComplete == false) || (x.TimeSheet == false))).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int Overdue(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.EndDate.Date < DateTime.Now.Date) && ((x.TaskComplete == false) || (x.TimeSheet == false))).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int TodayTask(int id)
+        {
+            int count = _context.Tasks.Where(x => (x.EmployeesId == id) && (x.StartDate.Date==DateTime.Now.Date) &&((x.TaskComplete == false) || (x.TimeSheet == false))).Select(x => x.Id).Count();
+            return count;
+        }
+        public int GetWorkQualitySum(int id)
+        {
+            int sum = _context.WorkQuality.Where(x => (x.EmployeesId == id)).Select(x => x.Quality).Sum();
+            return sum;
+        }
+
+        public int GetWorkQualityCount(int id)
+        {
+            int count = _context.WorkQuality.Where(x => (x.EmployeesId == id)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int GetCommunicationCount(int id)
+        {
+            int count = _context.Communication.Where(x => (x.EmployeesId == id)).Select(x => x.Id).Count();
+            return count;
+        }
+
+        public int GetComSum(int id)
+        {
+            int sum = _context.Communication.Where(x => (x.EmployeesId == id)).Select(x => x.CommunicationVal).Sum();
+            return sum;
+        }
+
     }
+
 }
