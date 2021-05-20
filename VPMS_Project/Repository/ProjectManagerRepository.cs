@@ -17,16 +17,19 @@ namespace VPMS_Project.Repository
             _context = context;
         }
 
-        public async Task<List<ProjectManagerModel>> GetProjectManager()
+        public async Task<List<Employee>> GetProjectManager(String title)
         {
-            return await _context.PreSalesProjectManagers.Select(x => new ProjectManagerModel()
+            var data1 = _context.Employees.Where(y => y.Designation == title).OrderBy(x => x.EmpFName);
+            var data = await data1.Select(x => new Employee()
             {
-                Id = x.Id,
-                Name = x.Name,
-                Descrption = x.Descrption
+
+                Id = x.EmpId,
+                Name = x.EmpFName + " " + x.EmpLName,
+                Designation = x.Designation
             }).ToListAsync();
+
+            return data;
         }
     }
-
 
 }
