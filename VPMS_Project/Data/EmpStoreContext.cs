@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VPMS_Project.Models;
 
+
 namespace VPMS_Project.Data
 {
     public class EmpStoreContext : IdentityDbContext<ApplicationUser>
@@ -27,20 +28,13 @@ namespace VPMS_Project.Data
         {
             _options = options;
         }
-
-        //new part
-
-        //public EmpStoreContext()
-        //{
-        //}
-
-        //finish
-
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ChatUser>()
+            .HasKey(x => new { x.ChatId, x.UserId });
+
 
         }
 
@@ -113,23 +107,23 @@ namespace VPMS_Project.Data
         public DbSet<ProjectSummary> VW_ProjectSummary { get; set; } //Todo MNl
         public DbSet<Payment> Payments { get; set; } //Todo MNl
 
-        /* Live chat -hashitha */
+        //Live chat -hashitha
 
-        //public DbSet<Message> Messages { get; set; }
-        //public DbSet<Chat> Chats { get; set; }
-        //public DbSet<ChatUser> ChatUsers { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatUser> ChatUsers { get; set; }
 
-        /* Review -hashitha */
+      //Review -hashitha 
 
-        public DbSet<WorkQualityModel> WorkQuality { get; set; }
+public DbSet<WorkQualityModel> WorkQuality { get; set; }
 
-        public DbSet<Communication> Communication { get; set; }
-
-
+public DbSet<Communication> Communication { get; set; }
 
 
 
 
 
-    }
+
+
+}
 }

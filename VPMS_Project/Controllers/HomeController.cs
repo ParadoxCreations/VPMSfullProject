@@ -12,6 +12,9 @@ using Syncfusion.Pdf.Graphics;
 using Syncfusion.Drawing;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using VPMS_Project.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace VPMS_Project.Controllers
 {
@@ -22,17 +25,19 @@ namespace VPMS_Project.Controllers
         private readonly Repo2 _repo2 = null;
         private readonly Repo3 _repo3 = null;
         private readonly Repo4 _repo4 = null;
+        private EmpStoreContext _ctx = null;
 
-        public HomeController(ILogger<HomeController> logger, Repo repo, Repo2 repo2, Repo3 repo3, Repo4 repo4)
+        public HomeController(ILogger<HomeController> logger, Repo repo, Repo2 repo2, Repo3 repo3, Repo4 repo4, EmpStoreContext ctx)
         {
             _logger = logger;
             _repo = repo;
             _repo2 = repo2;
             _repo3 = repo3;
             _repo4 = repo4;
+            _ctx = ctx;
         }
 
-       
+
         public IActionResult Index()
         {
             return View();
@@ -492,7 +497,137 @@ namespace VPMS_Project.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+
+        //+++++++++++++++++Live chat Home++++++++++++++++++++++
+
+
+        [Authorize(Roles = "admin")]
+        public IActionResult BrowseRooms()
+        {
+            var chats = _ctx.Chats.Include(x => x.Users).Where(x => !x.Users.Any(y => y.UserId == User.FindFirst(ClaimTypes.NameIdentifier).Value)).Where(x => x.Type != ChatType.Private)
+            .ToList();
+
+            return View(chats);
+        }
+        [Authorize(Roles = "admin")]
+        public IActionResult ChatIndex() => View();
+
+        public IActionResult Find()
+        {
+            var users = _ctx.Users.Where(x => x.Id != User.FindFirst(ClaimTypes.NameIdentifier).Value)
+            .ToList();
+
+            return View(users);
+        }
+
+        [Authorize(Roles = "admin")]
+        public IActionResult Private()
+        {
+            var chats = _ctx.Chats
+            .Include(x => x.Users)
+            .ThenInclude(x => x.User)
+            .Where(x => x.Type == ChatType.Private
+            && x.Users
+                .Any(y => y.UserId == User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                .ToList();
+
+            return View(chats);
+        }
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> CreatePrivateRoom(string userId)
+        {
+            var chat = new Chat
+            {
+                Name = "Private",
+                Type = ChatType.Private
+            };
+
+            chat.Users.Add(new ChatUser
+            {
+                UserId = userId
+            });
+
+            chat.Users.Add(new ChatUser
+            {
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value
+            });
+
+            _ctx.Chats.Add(chat);
+
+            await _ctx.SaveChangesAsync();
+
+            return RedirectToAction("Chat", new { id = chat.Id });
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Chat(int id)
+        {
+            var chat = _ctx.Chats
+                .Include(x => x.Messages)
+                .FirstOrDefault(x => x.Id == id);
+            return View(chat);
+        }
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateMessage(int chatId, string message)
+        {
+            var Message = new Message
+            {
+                ChatId = chatId,
+                Text = message,
+                Name = User.Identity.Name,
+                Timestamp = DateTime.Now
+            };
+
+            _ctx.Messages.Add(Message);
+            await _ctx.SaveChangesAsync();
+
+            return RedirectToAction("Chat", new { id = chatId });
+        }
+
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateRoom(string name)
+        {
+            var chat = new Chat
+            {
+                Name = name,
+                Type = ChatType.Room
+            };
+
+            chat.Users.Add(new ChatUser
+            {
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                Role = UserRole.admin
+            });
+
+            _ctx.Chats.Add(chat);
+            await _ctx.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+
+        [Authorize(Roles = "admin")]
+        [HttpGet]
+        public async Task<IActionResult> JoinRoom(int id)
+        {
+            var chatUser = new ChatUser
+            {
+                ChatId = id,
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                Role = UserRole.admin
+            };
+
+            _ctx.ChatUsers.Add(chatUser);
+            await _ctx.SaveChangesAsync();
+
+            return RedirectToAction("Chat", "Home", new { id = id });
+        }
     }
 }
+
 
 
