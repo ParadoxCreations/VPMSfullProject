@@ -119,7 +119,7 @@ namespace VPMS_Project.Controllers
             var model = new ProjectModel();
 
             ViewBag.Customers = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
-            ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager(), "Id", "Name");
+            ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager("project manager"), "Id", "Name");
 
             ViewBag.IsSuccess = isSuccess;
             ViewBag.ProjectId = projectId;
@@ -151,7 +151,7 @@ namespace VPMS_Project.Controllers
                 }
             }
             ViewBag.Customers = new SelectList(await _repo3.GetCustomers(), "Id", "Name");
-            ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager(), "Id", "Name");
+            ViewBag.ProjectManager = new SelectList(await _projectManagerRepository.GetProjectManager("project manager"), "Id", "Name");
             return View();
         }
 
