@@ -128,6 +128,7 @@ namespace VPMS_Project.Controllers
             return View(model);
         }
 
+
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> AddNewProject(ProjectModel projectModel)

@@ -51,7 +51,8 @@ namespace VPMS_Project.Repository
                 value = model.value,
                 ProjectBudget = model.ProjectBudget,
                 CustomersId = model.CustomersId,
-                projectManagerId = model.projectManagerId
+                projectManagerId = model.projectManagerId,
+                preProjectState = true
 
             };
 
@@ -89,7 +90,8 @@ namespace VPMS_Project.Repository
         public async Task<List<ProjectModel>> GetAllProjects()
         {
             var projects = new List<ProjectModel>();
-            var allprojects = await _context.PreSalesProjects.ToListAsync();
+
+            var allprojects = await _context.PreSalesProjects.Where(e => e.preProjectState == true).ToListAsync();
             if (allprojects?.Any() == true)
             {
                 foreach (var project in allprojects)
@@ -115,42 +117,42 @@ namespace VPMS_Project.Repository
 
         public async Task<ProjectModel> GetProjectByID(int id)
         {
-            //return await _context.PreSalesProjects.Where(x => x.ID == id)
-            //    .Select(project => new ProjectModel()
-            //    {
-            //        Description = project.Description,
-            //        ID = project.ID,
-            //        Title = project.Title,
-            //        ProjectType = project.ProjectType,
-            //        projectManagerId = project.projectManagerId,
-            //        projectManager = project.PreSalesprojectManager.Name,
-            //        startDate = project.startDate,
-            //        EndDate = project.endDate,
-            //        value = project.value,
-            //        ProjectBudget = project.ProjectBudget,
-            //        CustomersId = project.CustomersId,
-            //        Customers = project.Customers.Name,
+            return await _context.PreSalesProjects.Where(x => x.ID == id)
+                .Select(project => new ProjectModel()
+                {
+                    Description = project.Description,
+                    ID = project.ID,
+                    Title = project.Title,
+                    ProjectType = project.ProjectType,
+                    projectManagerId = project.projectManagerId,
+                    projectManager = project.PreSalesprojectManager.Name,
+                    startDate = project.startDate,
+                    EndDate = project.endDate,
+                    value = project.value,
+                    ProjectBudget = project.ProjectBudget,
+                    CustomersId = project.CustomersId,
+                    Customers = project.Customers.Name,
 
-            //    }).FirstOrDefaultAsync();
+                }).FirstOrDefaultAsync();
 
-            return await (from p in _context.PreSalesProjects.Where(x => (x.ID == id))
-                          join c in _context.PreSalesCustomers on p.CustomersId equals c.Id
-                          join pm in _context.PreSalesProjectManagers on p.projectManagerId equals pm.Id
-                          select new ProjectModel()
-                          {
-                              Description = p.Description,
-                              ID = p.ID,
-                              Title = p.Title,
-                              ProjectType = p.ProjectType,
-                              projectManagerId = p.projectManagerId,
-                              projectManager = pm.Name,
-                              startDate = p.startDate,
-                              EndDate = p.endDate,
-                              value = p.value,
-                              ProjectBudget = p.ProjectBudget,
-                              CustomersId = p.CustomersId,
-                              Customers = c.name
-                          }).FirstOrDefaultAsync();
+            //return await (from p in _context.PreSalesProjects.Where(x => (x.ID == id))
+            //              join c in _context.PreSalesCustomers on p.CustomersId equals c.Id
+            //              join pm in _context.PreSalesProjectManagers on p.projectManagerId equals pm.Id
+            //              select new ProjectModel()
+            //              {
+            //                  Description = p.Description,
+            //                  ID = p.ID,
+            //                  Title = p.Title,
+            //                  ProjectType = p.ProjectType,
+            //                  projectManagerId = p.projectManagerId,
+            //                  projectManager = pm.Name,
+            //                  startDate = p.startDate,
+            //                  EndDate = p.endDate,
+            //                  value = p.value,
+            //                  ProjectBudget = p.ProjectBudget,
+            //                  CustomersId = p.CustomersId,
+            //                  Customers = c.name
+            //              }).FirstOrDefaultAsync();
         }
 
         // new part
@@ -223,11 +225,14 @@ namespace VPMS_Project.Repository
         {
             var convertProjects = await _context.PreSalesProjects.FindAsync(id);
 
-            _context.PreSalesProjects.Remove(convertProjects);
+            convertProjects.preProjectState = false;
+
+            _context.PreSalesProjects.Update(convertProjects);
             await _context.SaveChangesAsync();
             return true;
 
         }
+
 
         //convert the project after going to add new project
         public async Task<bool> AddToConvertProjects(int id)
@@ -245,7 +250,11 @@ namespace VPMS_Project.Repository
                 EmployeesId = projects.projectManagerId,
                 StartDate = projects.startDate,
                 ClosedDate = projects.endDate,
-
+                DeliveryDate = projects.endDate,
+                CreatedDate = projects.startDate,
+                LastUpdate = projects.startDate,
+                AllocatedTasks = 0,
+                FinalizedTasks = 0
             };
             await _context.Projects.AddAsync(NewConvertProject);
             await _context.SaveChangesAsync();

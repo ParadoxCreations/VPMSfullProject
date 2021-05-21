@@ -15,14 +15,14 @@ namespace VPMS_Project.Controllers
     {
         private readonly TaskRepository _taskRepository = null;
         private readonly ProjectRepository _projectRepository = null;
-       
+
 
 
         public PreTaskController(TaskRepository taskRepository, ProjectRepository projectRepository)
         {
             _taskRepository = taskRepository;
             _projectRepository = projectRepository;
-           
+
         }
 
         [Authorize(Roles = "admin")]
@@ -56,9 +56,9 @@ namespace VPMS_Project.Controllers
 
 
         [Authorize(Roles = "admin")]
-        public async Task<ViewResult> AddNewTask(bool isSuccess = false, int taskId = 0, bool currentContext = false, bool invalid = false, int projectId = 1)
+        public async Task<ViewResult> AddNewTask(int projectId, bool isSuccess = false, int taskId = 0, bool currentContext = false, bool invalid = false)
         {
-            
+
 
             ViewBag.projects = new SelectList(await _projectRepository.GetProjects(), "ID", "Title");
 

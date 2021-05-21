@@ -113,17 +113,17 @@ namespace VPMS_Project.Data
         public DbSet<Chat> Chats { get; set; }
         public DbSet<ChatUser> ChatUsers { get; set; }
 
-      //Review -hashitha 
+        //Review -hashitha 
 
-public DbSet<WorkQualityModel> WorkQuality { get; set; }
+        public DbSet<WorkQualityModel> WorkQuality { get; set; }
 
-public DbSet<Communication> Communication { get; set; }
-
-
+        public DbSet<Communication> Communication { get; set; }
 
 
 
 
 
-}
+
+
+    }
 }

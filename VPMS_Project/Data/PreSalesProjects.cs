@@ -26,6 +26,7 @@ namespace VPMS_Project.Data
         public DateTime startDate { get; set; }
 
         public DateTime endDate { get; set; }
+        public bool preProjectState { get; set; }
 
         public Customers Customers { get; set; }
 
