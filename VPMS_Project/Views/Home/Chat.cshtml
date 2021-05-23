@@ -9,11 +9,11 @@
 @*<div class="chat-body" id="chat-scroll">
     @foreach (var message in Model.Messages)
     {
-<div class="message">
-    <header>@message.Name</header>
-    <p>@message.Text</p>
-    <footer>@message.Timestamp</footer>
-</div>}
+        <div class="message">
+            <header>@message.Name</header>
+            <p>@message.Text</p>
+            <footer>@message.Timestamp</footer>
+        </div>}
 </div>
 
 <form class="chat-input" onsubmit="sendMessage(event)" asp-controller="Home" asp-action="CreateMessage">

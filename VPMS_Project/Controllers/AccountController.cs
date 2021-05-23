@@ -133,32 +133,5 @@ namespace VPMS_Project.Controllers
 
             return RedirectToAction("Login");
         }
-
-        public IActionResult ChangePassword()
-        {
-            ViewBag.Issuccess = false;
-           
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(PasswordChange model)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await _repo4.ChangePassword(model);
-                if (result.Succeeded)
-                {
-                    ViewBag.Issuccess = true;
-                    ModelState.Clear();
-                    return View();
-                }
-                foreach(var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
-            }
-            return View(model);
-        }
     }
 }
