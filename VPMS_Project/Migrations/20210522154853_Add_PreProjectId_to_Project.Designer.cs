@@ -10,8 +10,8 @@ using VPMS_Project.Data;
 namespace VPMS_Project.Migrations
 {
     [DbContext(typeof(EmpStoreContext))]
-    [Migration("20210522092237_newchange1")]
-    partial class newchange1
+    [Migration("20210522154853_Add_PreProjectId_to_Project")]
+    partial class Add_PreProjectId_to_Project
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -993,6 +993,9 @@ namespace VPMS_Project.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PreProjectId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
