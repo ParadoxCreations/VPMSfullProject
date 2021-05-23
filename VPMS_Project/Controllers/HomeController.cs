@@ -564,10 +564,11 @@ namespace VPMS_Project.Controllers
         [HttpGet("{id}")]
         public IActionResult Chat(int id)
         {
-            var chat = _ctx.Chats
-                .Include(x => x.Messages)
-                .FirstOrDefault(x => x.Id == id);
-            return View(chat);
+            //var chat = _ctx.Chats
+            //    .Include(x => x.Messages)
+            //    .FirstOrDefault(x => x.Id == id);
+            //return View(chat);
+            return View();
         }
         [Authorize(Roles = "admin")]
         [HttpPost]
