@@ -27,6 +27,14 @@ namespace VPMS_Project.Models
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public async Task<IdentityResult> ChangePassword(PasswordChange model)
+        {
+            var index = _httpContextAccessor.HttpContext.User.FindFirst("Index").Value;
+            var user =await _userManager.FindByNameAsync(index);
+            return await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        }
+
+
         public int GetCount()
         {
             return _context.Projects.Count();
